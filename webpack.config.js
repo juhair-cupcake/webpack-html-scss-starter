@@ -2,6 +2,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: "./src/js/app.js",
@@ -10,17 +11,16 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
   },
 
+  //Live Server
+  devServer: {
+    index: "index.html",
+    compress: true,
+    port: 6969,
+  },
+
   //input locations & plugin files
   module: {
-    //Load HTML
     rules: [
-      {
-        test: /\.html$/i,
-        loader: "html-loader",
-        options: {
-          minimize: true,
-        },
-      },
       {
         test: /\.m?js$/,
         exclude: /(node_modules|bower_components)/,
@@ -32,34 +32,19 @@ module.exports = {
         },
       },
 
-      //Load Images
-      {
-        test: /\.(png|jpg|gif)$/i,
-        loader: "file-loader",
-        options: {
-          name: "[name].[ext]",
-          outputPath: "asset/images/",
-          publicPath: "asset/images/",
-        },
-      },
-
       //Load CSS
       {
         test: /\.s[ac]ss$/i,
-        use: ["style-loader", "css-loader", "sass-loader"],
-      },
-      {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        use: [
+          // fallback to style-loader in development
+          process.env.NODE_ENV !== "production"
+            ? "style-loader"
+            : MiniCssExtractPlugin.loader,
+          "css-loader",
+          "sass-loader",
+        ],
       },
     ],
-  },
-
-  //Live Server
-  devServer: {
-    index: "index.html",
-    compress: true,
-    port: 6969,
   },
 
   //Plugin Files
@@ -72,6 +57,16 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "[name].css",
       chunkFilename: "[id].css",
+    }),
+
+    //Copy the whole asset Folder
+    new CopyPlugin({
+      patterns: [
+        {
+          from: "./src/asset",
+          to: "asset",
+        },
+      ],
     }),
   ],
 
