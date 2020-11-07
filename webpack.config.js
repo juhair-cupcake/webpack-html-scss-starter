@@ -9,8 +9,10 @@ module.exports = {
     filename: "js/[name].js",
     path: path.resolve(__dirname, "dist"),
   },
+
   //input locations & plugin files
   module: {
+    //Load HTML
     rules: [
       {
         test: /\.html$/i,
@@ -29,6 +31,8 @@ module.exports = {
           },
         },
       },
+
+      //Load Images
       {
         test: /\.(png|jpg|gif)$/i,
         loader: "file-loader",
@@ -38,16 +42,11 @@ module.exports = {
           publicPath: "asset/images/",
         },
       },
+
+      //Load CSS
       {
         test: /\.s[ac]ss$/i,
-        use: [
-          // Creates `style` nodes from JS strings
-          "style-loader",
-          // Translates CSS into CommonJS
-          "css-loader",
-          // Compiles Sass to CSS
-          "sass-loader",
-        ],
+        use: ["style-loader", "css-loader", "sass-loader"],
       },
       {
         test: /\.css$/i,
